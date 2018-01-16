@@ -3,7 +3,8 @@
     <div class="cover-for-update"
       v-if="updateWindowVisible">
     </div>
-
+      
+      <!-- update window -->
       <pewa-update-window 
         class="pewa-update-window"
         v-if="updateWindowVisible" 
@@ -20,6 +21,7 @@
           v-on:gohome="loadOnStart()">
         </pewa-search>
 
+      <!-- internal list -->
       <pewa-list
         class="pewa-list-component"
         v-if="dataReady && internalListVisible" 
@@ -37,13 +39,8 @@
 
       </div>
 
+<!-- right column -->
       <div class="details-and-status">
-
-      <!-- <pewa-details-switch
-        class="pewa-details-switch-component"
-        v-if="detailsReady.status"
-        v-bind:item-object="elementDetails" >
-      </pewa-details-switch> -->
 
       <pewa-details-anime
         class="component"
@@ -51,7 +48,7 @@
         v-bind:item-object="elementDetails" 
         v-on:updateencounter="openUpdateWindow($event)">
       </pewa-details-anime>
-
+<!-- manga component -->
       <pewa-details-manga
         class="component"
         v-if="detailsReady.status && detailsReady.type == 'manga'" 
@@ -59,21 +56,28 @@
         v-on:updateencounter="openUpdateWindow($event)">
       </pewa-details-manga>
 
+<!-- tv component -->
       <pewa-details-tv
         class="component"
         v-if="detailsReady.status && detailsReady.type == 'tvseries'" 
         v-bind:item-object="elementDetails" 
+        v-bind:status-visible="statusVisible"
         v-bind:endpoint="restMainEndpoint"
-        v-on:updatetv="updateElement($event)">
+        v-on:updatetv="updateElement($event)"
+        v-on:showstatus="statusVisible = $event">
       </pewa-details-tv>
 
+<!-- movie component -->
       <pewa-details-movie 
         class="component"
         v-if="detailsReady.status && detailsReady.type == 'movie'" 
+        v-bind:status-visible="statusVisible"
         v-bind:item-object="elementDetails" 
-        v-on:updatemovie="updateElement($event)">
+        v-on:updatemovie="updateElement($event)"
+        v-on:showstatus="statusVisible = $event">>
       </pewa-details-movie>
 
+<!-- book component -->
       <pewa-details-book
         class="component" 
         v-if="detailsReady.status && detailsReady.type == 'book'" 
@@ -81,9 +85,10 @@
         v-on:updatebook="updateElement($event)">
       </pewa-details-book>
 
+<!-- status component -->
       <pewa-status
         class="component"
-        v-if="detailsReady.status"
+        v-if="detailsReady.status && statusVisible"
         v-bind:item-object="elementDetails"
         v-on:updatestatus="updateEncounter($event)"
         v-on:deletestatus="deleteEncounter($event)"
@@ -116,7 +121,6 @@ import PewaDetailsBook from "./components/PewaDetailsBook";
 import PewaDetailsTv from "./components/PewaDetailsTv";
 import PewaListExternal from "./components/PewaListExternal";
 import PewaStatus from "./components/PewaStatus";
-import PewaDetailsSwitch from "./components/PewaDetailsSwtich";
 import axios from "axios";
 import { HTTP, pewaHttp } from "./http-comon";
 
@@ -143,6 +147,7 @@ export default {
       },
       urlModifier: "",
       // updateObject: {},
+      statusVisible: false,
       statusRequest: {},
       addNewItem: false,
       statusManager: {
@@ -163,16 +168,21 @@ export default {
     "pewa-details-movie": PewaDetailsMovie,
     "pewa-details-book": PewaDetailsBook,
     "pewa-details-tv": PewaDetailsTv,
-    "pewa-list-external": PewaListExternal,
-    "pewa-details-switch": PewaDetailsSwitch
+    "pewa-list-external": PewaListExternal
   },
   created() {
-    this.loadOnStart();
-    console.log('app created');
-    if (this.dataReady) {
-      console.log('details ->' + this.elementDetails);
+    this.loadOnStart(); 
+  },
+  computed: {
+    externalListVisible: function() {
+      return !this.internalListVisible;
+    },
+    resultsTable: function() {
+      return this.initialData;
+    },
+    externalResultsTable: function() {
+      return this.externalData;
     }
-    
   },
   methods: {
     // ładowanie tabeli na starcie
@@ -285,6 +295,7 @@ export default {
             type = "book";
             break;
         }
+        this.elementDetails = {};
         this.idNumber = object.id;
         this.selectedTitle = object.title;
         this.getEncounterDetails(modurl, type);
@@ -293,6 +304,7 @@ export default {
     },
     // get details of last shown element
     getLastSelectedElement: function() {
+      console.log("get last");
       if (this.elementDetails.type != null) {
         this.getSelectedElement({
           type: this.elementDetails.type,
@@ -325,7 +337,6 @@ export default {
       // naprawić reakcję po wykonaniu czynności
     },
     updateElement: function(data) {
-      console.log(data);
       let extend;
       switch (data.type) {
         case "TVSERIES":
@@ -350,6 +361,8 @@ export default {
           this.searchResults.message = response.data.message;
           this.searchResults.resultsFound = response.data.resultsFound;
           this.searchResults.rowsAffected = response.data.rowsAffected;
+          this.getLastSelectedElement();
+          this.loadOnStart(); 
         })
         .catch(error => {
           if (!error.response) {
@@ -358,7 +371,7 @@ export default {
             this.searchResults.message = response.data.message;
           }
         });
-      this.getLastSelectedElement();
+      
     },
     statusBridge: function(data) {
       console.log(this.statusRequest);
@@ -371,7 +384,6 @@ export default {
       this.statusRequest.season = data.season ? data.season : 0;
       this.statusRequest.comment = data.comment;
       this.statusRequest.statusId = data.statusId ? data.statusId : 0;
-
       var extend;
 
       switch (this.statusManager.action) {
@@ -413,11 +425,12 @@ export default {
           this.searchResults.message = response.data.message;
           this.searchResults.resultsFound = response.data.resultsFound;
           this.searchResults.rowsAffected = response.data.rowsAffected;
+          this.getLastSelectedElement();
         })
         .catch(error => {
           console.log(error);
         });
-      this.getLastSelectedElement();
+      
     },
     addEncounter: function(encounterId) {
       console.log(this.elementDetails);
@@ -440,15 +453,14 @@ export default {
     },
     updateEncounter: function(status) {
       this.statusManager.action = "updstatus";
-      this.statusRequest = status;
-      console.log(this.elementDetails.type);
+      let tempEncounter = {};
+      // assign selected encounter object to statusRequest object
       if (this.elementDetails.type != null) {
-        status.elementType = this.elementDetails.type;
+        tempEncounter = (this.elementDetails.type === "TVSERIES") ? this.elementDetails.internalStatus[status] : this.elementDetails.status[status];
+        this.statusRequest = Object.assign({}, tempEncounter);
+        this.statusRequest.elementType = this.elementDetails.type;
+        console.log(this.statusRequest);
       }
-      // TODO poprawić updateObject na statusRequest
-      // this.updateObject = status;
-      console.log("app main");
-      console.log(status);
       this.updateWindowVisible = true;
     },
 
@@ -485,17 +497,6 @@ export default {
       this.statusRequest.season = this.elementDetails.season;
       this.updateWindowVisible = true;
     }
-  },
-  computed: {
-    externalListVisible: function() {
-      return !this.internalListVisible;
-    },
-    resultsTable: function() {
-      return this.initialData;
-    },
-    externalResultsTable: function() {
-      return this.externalData;
-    }
   }
 };
 </script>
@@ -522,11 +523,7 @@ body {
   align-items: center;
   margin: 0px;
   padding: 0px;
-  /* background: linear-gradient(to bottom, #1b1b1b, #2e2e1f); */
-  /* background-color: #22313f; */
   background-color: #131B23;
-
-  /* height: 1000px; */
 }
 
 .pewa-list-component {

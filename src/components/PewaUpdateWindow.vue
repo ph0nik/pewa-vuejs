@@ -19,7 +19,7 @@
             <div class="update-rating">
               Rating:
               <select id="pewa-update-rating" v-model="status.encounterRating" required>
-                <option v-for="(item, index) in rating" v-bind:value="item" v-bind:key="index" v-bind:selected="status.mediaSource">
+                <option v-for="(item, index) in 10" v-bind:value="item" v-bind:key="index" v-bind:selected="status.mediaSource">
                   {{ item }}
                   
                 </option>
@@ -59,7 +59,7 @@ export default {
   },
   data() {
     return {
-      status: {},
+      // status: {},
       addnew: true,
       selectMedia: [
         { id: "Cinema", val: "CINEMA" },
@@ -73,23 +73,23 @@ export default {
         { id: "eBook", val: "EBOOK" },
         { id: "other", val: "OTHER" }
       ],
-      rating: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      // rating: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      newEncounter: {}
     };
   },
-  created() {
-    console.log("create pewa update window")
-    
-    console.log(this.encounter);
-    if (this.encounter != null) {
-      this.status = this.encounter;
-      var data = new Date(this.encounter.encounterDate)
-        .toISOString()
-        .slice(0, 10);
-      this.status.encounterDate = data;
-    }
-    console.log(this.encounter.season);
-  },
+  created() {},
   computed: {
+    // assign external status object to interla object and format date value
+    status: function() {
+      if (this.encounter != null) {
+        this.newEncounter = this.encounter;
+        var data = new Date(this.encounter.encounterDate)
+          .toISOString()
+          .slice(0, 10);
+        this.newEncounter.encounterDate = data;
+      }
+      return this.newEncounter;
+    },
     formatEncounterDate: function() {
       var date;
       if (this.status != null) {
@@ -121,8 +121,8 @@ export default {
   margin: 5px;
   left: 0%;
   top: 0%;
-  height: 60%;
-  width: 50%; 
+  height: 100pt;
+  width: 300pt;
   padding: 0px;
   /* background-color: #ccccb3; */
   /* opacity: 1; */

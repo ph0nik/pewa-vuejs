@@ -7,6 +7,7 @@ import App from './App'
 
 Vue.config.productionTip = false
 
+import style from '../static/font-awesome-4.7.0/css/font-awesome.min.css';
 
 // export const bus = new Vue();
 
