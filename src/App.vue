@@ -39,11 +39,11 @@
 
       <div class="details-and-status">
 
-      <pewa-details-switch
+      <!-- <pewa-details-switch
         class="pewa-details-switch-component"
         v-if="detailsReady.status"
         v-bind:item-object="elementDetails" >
-      </pewa-details-switch>
+      </pewa-details-switch> -->
 
       <pewa-details-anime
         class="component"
@@ -523,7 +523,8 @@ body {
   margin: 0px;
   padding: 0px;
   /* background: linear-gradient(to bottom, #1b1b1b, #2e2e1f); */
-  background-color: #22313f;
+  /* background-color: #22313f; */
+  background-color: #131B23;
 
   /* height: 1000px; */
 }

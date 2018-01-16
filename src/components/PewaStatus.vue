@@ -2,21 +2,59 @@
 <div class="status">
     <!-- status -->
     <div class="show-status">
+      <!-- nagłówek -->
       <div v-for="(item, index) in encounters" v-bind:key="index">
-        <p><b>Added:</b> {{ new Date(item.addedDate).toUTCString() }}</p>
-        <span><b>Date:</b> {{ new Date(item.encounterDate).toLocaleDateString() }}</span>
-        <span><b>Source:</b> {{ item.mediaSource }}</span>
-        <span><b>Rating:</b> {{ item.encounterRating }}/10</span>
-        <span v-if="itemObject.type === 'TVSERIES'">
-          <b>Season: </b> {{ item.season }}
-        </span>
-        <br />
-        <span><b>Comment:</b> {{ item.comment }}</span>  
-        <button v-on:click="updateStatus(item)" name="update" type="button">update</button>
-        <button v-if="notSingleElement" v-on:click="deleteStatus(item)" name="delete" type="button">delete</button>  
+        <div class="status-title">
+          <!-- kiedy objerzany -->
+          <div>
+             watched: <span>{{ new Date(item.encounterDate).toLocaleDateString() }}</span>
+          </div>
+          <!-- źródło -->
+          <div>
+            &squf; source: <span>{{ item.mediaSource }}</span>
+          </div>
+          <!-- sezon -->
+          <div v-if="itemObject.type === 'TVSERIES'">
+            &squf; season: <span>{{ item.season }}</span>
+          </div>
+          <!-- ocena -->
+          <div>
+            &squf; rating: {{ item.encounterRating }}/10
+          </div>
+        </div>
+        <!-- recenzja -->
+        <div class="status-text">
+          <span>review:</span>
+          <p>{{ item.comment }}</p>
+        </div>
+        <!-- stopka recenzji -->
+        <div class="status-text-footer"> 
+          <div>
+            <button class="status-button" v-on:click="updateStatus(item)" name="update" type="button">update</button>
+          </div>
+          <div>
+            <button class="status-button" v-if="notSingleElement" v-on:click="deleteStatus(item)" name="delete" type="button">delete</button> 
+          </div>
+          <div>
+            added: <i>{{ new Date(item.addedDate).toUTCString() }}</i>
+          </div>
+        </div>
       </div>      
-      <button v-on:click="addStatus" name="addnew" type="button">add new</button>
-    </div>    
+      <button class="status-button" v-on:click="addStatus" name="addnew" type="button">add new</button>
+    </div>  
+    <!-- stopka -->
+    <div class="details-tv-footer-bar">
+      <!-- dodane -->
+      <div>
+        show added: {{ itemObject.dbDatetime }}
+      </div>
+      <!-- update -->
+      <div>
+        <button class="status-button" onclick="location.href='#'" name="update" type="button">
+          back to top
+        </button>  
+      </div>
+    </div>        
 </div>
 
 </template>
@@ -47,6 +85,8 @@ export default {
     }
   },
   created() {
+    console.log("status created");
+    console.log(this.itemObject);
   },
   methods: {
     // aktualizuj status
@@ -118,9 +158,91 @@ export default {
 </script>
 
 <style scoped>
-.status {
-  margin: 5px;
-  padding: 10px;
-  background-color: white;
+* {
+  box-sizing: border-box;
+  padding: 0px;
+  outline: none;
 }
+
+.status {
+  padding: 1pt;
+  margin: 0pt 5pt 5pt 5pt;
+  background-color: #1c252e;
+  color: #fff;
+  /* border: 1pt solid red; */
+}
+
+.details-tv-footer-bar {
+  border-top: 1px solid #b9b9b9;
+  background-color: #3b444d;
+  font-size: 11pt;
+  color: #b9b9b9;
+  padding: 0px 10pt 0px 10pt;
+  display: flex;
+  justify-content: space-between;
+  margin: 10pt 0pt 0pt 0pt;
+}
+
+.details-tv-footer-bar > div {
+  margin: 4pt;
+}
+
+.status-button {
+  border: 1pt solid #b9b9b9;
+  width: 90pt;
+  height: 15pt;
+  background-color: #404b56;
+  color: #b9b9b9;
+  border-radius: 4pt;
+}
+
+.status-button:hover {
+  cursor: pointer;
+  border-color: #FFE140;
+  color: #FFE140;
+}
+
+.status-title {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #2e353c;
+  color: #747474;
+  font-size: 11pt;
+  text-align: left;
+  margin: 6pt 8pt 0pt 8pt;
+}
+
+.status-title span {
+  color: #6B8FD4;
+}
+
+.status-text {
+  padding: 2pt 0pt 4pt 0pt;
+  border-bottom: 1px solid #2e353c;
+  margin: 10px;
+  margin: 6pt 8pt 0pt 8pt;
+}
+
+.status-text span {
+  color: #747474;
+  font-size: 11pt;
+}
+
+.status-text p {
+  padding: 0px;
+  margin: 0px;
+  color: #d4d4d4;
+  text-justify: justify;
+}
+
+.status-text-footer {
+  margin: 6pt 8pt 10pt 8pt;
+  font-size: 10pt;
+  color: #747474;
+  display: flex;
+  justify-content: space-between;
+
+}
+
+
 </style>
