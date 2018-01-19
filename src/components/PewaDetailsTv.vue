@@ -144,7 +144,7 @@
           </div>
 <!-- end of poster div           -->
 <!-- cast -->
-          <div class="details-tv-people">
+          <div class="details-tv-people stars">
             <div>stars:
               <span v-for="(item, index) of this.actors" v-bind:key="index">
                 <a href="javascript:;" v-on:click="getPerson(item)">
@@ -155,7 +155,7 @@
             </div>
           </div>
 <!-- additional info below cast           -->
-          <div class="details-tv-people details-tv-bottom-info">
+          <div class="details-tv-people details-tv-bottom-info stars">
 <!-- country of origin             -->
             <div> country:
               <a href="javascript:;" v-on:click="getCountry(realoadedData.country)">
@@ -271,7 +271,11 @@ export default {
       required: true
     },
     endpoint: String,
-    statusVisible: Boolean
+    statusVisible: Boolean,
+    windowSize: {
+        width: Number,
+        height: Number
+      }
   },
   components: {
     "pewa-status": PewaStatus
@@ -281,7 +285,7 @@ export default {
       restAddress: "http://localhost:8081/",
       imgRest: "",
       imgLoaded: false,
-      imgWidth: 220,
+      imgWidth: 200,
       producers: [],
       creators: [],
       actors: [],
@@ -304,7 +308,7 @@ export default {
       } else if (staff[i].job.toLowerCase().includes("actor")) {
         this.actors.push(staff[i]);
       }
-    }
+    };
     console.log(this.itemObject);
     if (this.statusVisible == true) {
       this.episodes = false;
@@ -365,12 +369,8 @@ export default {
     imageSize: function() {
       var img = new Image();
       img.src = this.imageAddress;
-      // if (img && img.style) {
       var imgRatio = img.naturalWidth / img.naturalHeight;
       var imageSize = {
-        backgroundImage: "url(" + this.imageAddress + ")",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
         width: this.imgWidth.toString() + "px",
         height: Math.round(this.imgWidth / imgRatio) + "px"
       };
@@ -393,7 +393,17 @@ export default {
       return sorted[sorted.length - 1];
     }
   },
+  mounted:function(){
+    this.getWindowSize();
+  },
   methods: {
+// set actual parent element size    
+    getWindowSize: function() {
+
+      this.windowSize.height = document.getElementsByClassName("details")[0].clientHeight;
+      this.windowSize.width = document.getElementsByClassName("details")[0].clientWidth;
+      console.log(this.windowSize);
+    },
     // formatowanie identyfikatorów sezonów i odcinków
     episodeNumber: function(s, ep) {
       let season;
@@ -480,7 +490,7 @@ a:hover {
 
 .fa-star {
   color: #ffe140;
-  /* text-shadow: 2pt 2pt #a68c00; */
+  /* text-shadow: 2px 2px #a68c00; */
 }
 
 .fa-star-o {
@@ -491,25 +501,26 @@ a:hover {
   width: 600px;
   border: none;
   padding: 0px;
-  margin: 5pt 5pt 0pt 5pt;
+  margin: 5px 5px 0px 5px;
   background-color: #1c252e;
 }
 
 .details-tv-title-bar {
   display: flex;
   justify-content: space-between;
-  font-size: 22pt;
+  line-height: 1.4em;
+  font-size: 1.8em;
   font-weight: bold;
   background: linear-gradient(to right, #22313f, #2c3f50);
   color: #fff;
-  padding: 0px 8px 2px 8px;
+  padding: 0px 8px 0px 8px;
 }
 
 .details-tv-title-bar2 {
   border-bottom: 1px solid #b9b9b9;
   background-color: #505f6d;
-  line-height: 18pt;
-  font-size: 11pt;
+  line-height: 1.5em;
+  font-size: 1em;
   color: #e2e2e2;
   padding: 0px 10px 0px 10px;
   display: flex;
@@ -518,25 +529,25 @@ a:hover {
 .details-tv-footer-bar {
   border-top: 1px solid #b9b9b9;
   background-color: #3b444d;
-  font-size: 11pt;
+  font-size: 0.9em;
   color: #b9b9b9;
   padding: 0px 10px 0px 10px;
   display: flex;
   justify-content: space-between;
-  margin: 10pt 0pt 5pt 0pt;
+  margin: 10px 0px 5px 0px;
 }
 
 .details-tv-footer-bar > div {
-  line-height: 20pt;
-  margin: 4pt;
+  line-height: 2em;
+  margin: 4px;
 }
 
 .rating-star {
-  width: 20pt;
+  width: 20px;
 }
 
 .out-of-ten {
-  font-size: 14pt;
+  font-size: 0.6em;
 }
 
 .details-tv-plot {
@@ -549,36 +560,39 @@ a:hover {
   border-bottom: 1px solid #2e353c;
   text-align: left;
   color: #6b8fd4;
-  font-size: 12pt;
-  margin: 6pt 8pt 0pt 8pt;
+  font-size: 1em;
+  margin: 8px 10px 0px 10px;
 }
 
 .details-tv-people {
-  padding: 2pt 0pt 4pt 0pt;
+  padding: 2px 0px 4px 0px;
   border-top: 1px solid #2e353c;
   text-align: justify;
   color: #747474;
-  font-size: 11pt;
-  margin: 6pt 8pt 0pt 8pt;
+  font-size: 1em;
+  margin: 6px 10px 0px 10px;
+}
+
+.stars {
+  font-size: 0.9em;
 }
 
 .details-tv-seasons {
-  padding: 4pt 0pt 4pt 0pt;
+  padding: 14px;
   text-align: center;
   color: #747474;
-  font-size: 13pt;
-  margin: 0pt 8pt 0pt 8pt;
+  font-size: 1.1em;
 }
 
 .details-tv-episode {
   display: flex;
   flex-direction: column;
-  font-size: 11pt;
-  margin: 0pt 8pt 0pt 8pt;
+  font-size: 0.9em;
+  padding: 4px 10px;
 }
 
 .details-tv-episode > div:nth-of-type(1) {
-  padding: 2pt 6pt 2pt 6pt;
+  padding: 2px 6px 2px 6px;
   background-color: #2b3743;
   display: inherit;
   flex-direction: row;
@@ -587,7 +601,7 @@ a:hover {
 }
 
 .details-tv-episode > div:nth-of-type(2) {
-  padding: 2pt 6pt 10pt 6pt;
+  padding: 2px 6px 10px 6px;
   text-align: justify;
   color: #d4d4d4;
 }
@@ -602,33 +616,31 @@ a:hover {
   display: flex;
   flex-direction: column;
   padding: 0px;
-  margin: 8pt 4pt 0px 0px;
+  margin: 8px 8px 8px 0px;
 }
 
 .poster {
-  border: 1pt solid #747474;
+  border: 1px solid #747474;
   border-radius: 0px;
   padding: 0px;
-  /* margin: 8pt 4pt 0px 0px; */
 }
 
 .poster-div {
   position: relative;
-  /* margin: 8pt 4pt 0px 0px; */
-  border: 1pt solid #747474;
+  border: 1px solid #747474;
 }
 
 .poster-box-tv {
   display: flex;
   justify-content: space-between;
-  font-size: 11pt;
+  font-size: 0.9em;
 }
 
 .poster-links {
   position: relative;
   width: 100%;
-  top: 4pt;
-  padding: 2pt;
+  top: 6px;
+  padding: 2px;
   margin: 0px;
   background-color: #2b3743;
   color: #747474;
@@ -637,19 +649,18 @@ a:hover {
 }
 
 .details-tv-button {
-  border: 0pt solid #b9b9b9;
-  width: 90pt;
-  height: 20pt;
+  border: none;
+  width: 9.4em;
+  height: 2.1em;
   /* background-color: #404b56; */
   background-color: inherit;
   color: #b9b9b9;
-  border-radius: 1pt;
+  border-radius: 1px;
 }
 
 .details-tv-button:hover {
   cursor: pointer;
-  border: 1pt solid #ffe140;
-  /* border-color: #ffe140; */
+  border: 1px solid #ffe140;
   color: #ffe140;
 }
 
@@ -667,7 +678,7 @@ a:hover {
 }
 
 .details-tv-title-select > div button {
-  margin: 4pt;
+  margin: 6px;
 }
 
 .details-tv-title-select > div > div {
@@ -677,29 +688,29 @@ a:hover {
 
 .details-tv-title-arrow-wrapper {
   background-color: #1c252e;
-  height: 7pt;
+  height: 7px;
 }
 
 .details-tv-title-arrow {
   background-color: #2b3743;
-  width: 0;
-  height: 0;
-  border-left: 20pt solid #1c252e;
-  border-right: 20pt solid #1c252e;
-  border-top: 7pt solid #2b3743;
+  width: 0px;
+  height: 0px;
+  border-left: 24px solid #1c252e;
+  border-right: 24px solid #1c252e;
+  border-top: 10px solid #2b3743;
 }
 
 .encounter {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  padding: 4pt 4pt 4pt 4pt;
+  padding: 4px;
   border-top: 1px solid #2e353c;
   /* text-align: justify; */
   /* color: #747474; */
   color: #bdbdbd;
-  font-size: 11pt;
-  margin: 6pt 8pt 0pt 8pt;
+  font-size: 0.9em;
+  margin: 6px 8px 0px 8px;
 }
 
 .rating {
@@ -708,7 +719,7 @@ a:hover {
 }
 
 .rating > span {
-  margin: 0pt 1pt 0px 0pt;
+  margin: 0px 1px 0px 0px;
 }
 
 .rating-full {

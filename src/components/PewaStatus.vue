@@ -161,55 +161,54 @@ export default {
 
 .status-add-new {
   border: 0px;
+  padding: 4px;
   display: flex;
   justify-content: center;
 }
 
 .status-add-new > button {
-  height: 30pt;
-  width: 150pt;
-  font-size: 18pt;
+  height: 1.5em;
+  width: 7em;
+  font-size: 1.8em;
 }
 
 .status {
-  padding: 1pt;
-  margin: 0pt 5pt 5pt 5pt;
+  padding: 1px;
+  margin: 0px 5px 5px 5px;
   background-color: #1c252e;
   color: #fff;
-  /* border: 1pt solid red; */
+  width: 600px;
 }
 
 .details-tv-footer-bar {
   border-top: 1px solid #b9b9b9;
   background-color: #3b444d;
-  font-size: 11pt;
+  font-size: 0.9em;
   color: #b9b9b9;
-  padding: 0px 10pt 0px 10pt;
+  padding: 0px 10px 0px 10px;
   display: flex;
   justify-content: space-between;
-  margin: 10pt 0pt 0pt 0pt;
+  margin: 10px 0px 0px 0px;
 }
 
 .details-tv-footer-bar > div {
-  line-height: 20pt;
-  padding: 0px;
-  margin: 4pt;
-  
+  line-height: 2em;
+  margin: 4px;
 }
 
 .status-button {
-  border: 0pt solid #b9b9b9;
-  width: 90pt;
-  height: 20pt;
+  border: none;
+  width: 9.4em;
+  height: 2.1em;
   /* background-color: #404b56; */
   background-color: inherit;
   color: #979797;
-  border-radius: 1pt;
+  border-radius: 1px;
 }
 
 .status-button:hover {
   cursor: pointer;
-  border: 1pt solid #ffe140;
+  border: 1px solid #ffe140;
   /* border-color: #FFE140; */
   color: #FFE140;
 }
@@ -219,10 +218,10 @@ export default {
   justify-content: space-between;
   border-top: 1px solid #2e353c;
   color: #747474;
-  font-size: 11pt;
+  font-size: 0.9em;
   text-align: left;
-  padding: 2pt 8pt 2pt 8pt;
-  margin: 10pt 8pt 0pt 8pt;
+  padding: 2px 8px 2px 8px;
+  margin: 10px 8px 0px 8px;
 }
 
 .status-title span {
@@ -231,38 +230,34 @@ export default {
 
 .status-text {
   /* border-bottom: 1px solid #2e353c; */
-  margin: 0pt 8pt 0pt 8pt;
-  padding: 2pt 8pt 2pt 8pt;
+  margin: 0px 8px;
+  padding: 2px 8px;
   background-color: #242424;
 }
 
 .status-text span {
   color: #747474;
-  font-size: 11pt;
+  font-size: 0.9em;
 }
 
 .status-text p {
-  padding: 5pt 0pt;
+  padding: 5px 0px;
   margin: 0px;
-  font-size: 11pt;
-  text-indent: 16pt;
+  font-size: 0.9em;
+  text-indent: 1.5em;
   color: #d4d4d4;
   text-align: justify;
 }
 
 .status-text-footer {
-  margin: 0pt 8pt 30pt 8pt;
-  padding: 0pt 4pt;
-  font-size: 10pt;
-  line-height: 25pt;
+  margin: 0px 8px 30px 8px;
+  padding: 0px 4px;
+  font-size: 0.9em;
+  line-height: 2.5em;
   color: #747474;
   background-color: #363636;
   display: flex;
   justify-content: space-between;
-}
-
-.status-text-footer > div {
-  /* line-height: 20pt; */
 }
 
 .rating {
@@ -271,7 +266,7 @@ export default {
 }
 
 .rating > span {
-  margin: 0pt 1pt 0px 0pt;
+  margin: 0px 1px 0px 0px;
 }
 
 .rating > .star {

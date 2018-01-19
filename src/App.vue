@@ -1,10 +1,12 @@
 <template>
-  <div id="app">
+  <div id="main-window">
+
+<!-- layer covering all the other layers -->
     <div class="cover-for-update"
       v-if="updateWindowVisible">
     </div>
       
-      <!-- update window -->
+<!-- update window -->
       <pewa-update-window 
         class="pewa-update-window"
         v-if="updateWindowVisible" 
@@ -13,15 +15,18 @@
         v-on:submit="statusBridge($event)">
       </pewa-update-window>
 
-    <div class="mid-wrapper">      
-      
-      <div class="list-and-search">
+<!-- search component       -->
         <pewa-search 
+          class="search-component"
           v-on:searchencounter="searchEncounterByQuery($event)"
           v-on:gohome="loadOnStart()">
         </pewa-search>
 
-      <!-- internal list -->
+<!-- mid wrapper -->
+    <div class="mid-wrapper">      
+      
+      <div class="list-and-search">
+<!-- internal list -->
       <pewa-list
         class="pewa-list-component"
         v-if="dataReady && internalListVisible" 
@@ -30,6 +35,7 @@
       </pewa-list>
 
       <!-- dodać widocznośc listy i zmienić zawartość -->
+<!-- external list -->
       <pewa-list-external
         class="pewa-list-external-component"
         v-if="dataReady && externalListVisible" 
@@ -41,6 +47,12 @@
 
 <!-- right column -->
       <div class="details-and-status">
+
+        <span style="color: #fff;">{{ getWindowSize }}</span>
+      <!-- <div class="loading-window" style="color: #fff;">
+          <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+      </div> -->
+
 
       <pewa-details-anime
         class="component"
@@ -61,6 +73,7 @@
         class="component"
         v-if="detailsReady.status && detailsReady.type == 'tvseries'" 
         v-bind:item-object="elementDetails" 
+        v-bind:window-size="windowSize"
         v-bind:status-visible="statusVisible"
         v-bind:endpoint="restMainEndpoint"
         v-on:updatetv="updateElement($event)"
@@ -73,6 +86,7 @@
         v-if="detailsReady.status && detailsReady.type == 'movie'" 
         v-bind:status-visible="statusVisible"
         v-bind:item-object="elementDetails" 
+        v-bind:window-size="windowSize"
         v-on:updatemovie="updateElement($event)"
         v-on:showstatus="statusVisible = $event">>
       </pewa-details-movie>
@@ -145,6 +159,9 @@ export default {
         status: false,
         type: ""
       },
+      loadingWindow: {
+        status: false
+      },
       urlModifier: "",
       // updateObject: {},
       statusVisible: false,
@@ -153,7 +170,12 @@ export default {
       statusManager: {
         action: "addmovie"
       },
-      selectedTitle: String
+      selectedTitle: String,
+// size of component loaded on the right side, it refreshes every time new set of data is loaded
+      windowSize: {
+        width: Number,
+        height: Number
+      }
     };
   },
   components: {
@@ -174,6 +196,10 @@ export default {
     this.loadOnStart(); 
   },
   computed: {
+    getWindowSize: function() {
+      console.log();
+      return this.windowSize;
+    },
     externalListVisible: function() {
       return !this.internalListVisible;
     },
@@ -206,11 +232,13 @@ export default {
     getEncounterDetails: function(url, type) {
       this.detailsReady.type = type;
       this.detailsReady.status = false;
+      this.loadingWindow.visible = true;
       pewaHttp
         .get(url)
         .then(response => {
           this.elementDetails = response.data.encounters[0];
           // notifies that response was procesed
+          this.loadingWindow.visible = false;
           this.detailsReady.status = true;
         })
         .catch(e => {
@@ -505,35 +533,49 @@ export default {
 @import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro");
 @import url("https://fonts.googleapis.com/css?family=Oxygen");
 
-#app {
-  /* display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column; */
+#main-window {
+  /* padding: 10px; */
   position: relative;
-  width: 1200px;
-  height: 1200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: initial;
+  background-color: inherit;
+  align-items: center;
+  /* width: 1200px; */
+  /* height: 1200px; */
   font-family: "Oxygen", sans-serif;
 }
 
 body {
+  background-color: #131B23;
+  /* position: relative;
   display: flex;
   justify-content: space-evenly;
   flex-direction: column;
   align-items: center;
   margin: 0px;
-  padding: 0px;
-  background-color: #131B23;
+  padding: 0px; */
 }
 
-.pewa-list-component {
-  z-index: 1;
-  position: relative;
+.loading-window {
+  z-index: 10;
+  /* background-color: #131B23; */
+  background-color: #fff;
+  opacity: 0.5;
+  position: absolute;
+  cursor: pointer;  
+  width: 620px;
+  padding: 0px;
+  margin: 0px;
+  color: #F0F0F0;
+  border-radius: 0px;
+  display: flex;
+  flex-direction: column;
 }
 
 .cover-for-update {
   position: absolute;
-  z-index: 2;
+  z-index: 9;
   visibility: visible;
   background-color: #000000;
   opacity: 0;
@@ -541,13 +583,20 @@ body {
   height: 100%;
 }
 
+.search-component {
+  position: relative;
+  z-index: 2;
+}
+
+
 .pewa-update-window {
-  z-index: 3;
+  z-index: 10;
   position: absolute;
 }
 
 .mid-wrapper {
   /* width: 100%; */
+  z-index: 3;
   position: relative;
   display: flex;
   flex-direction: row;
@@ -556,16 +605,4 @@ body {
   min-height: 600px;
 }
 
-.list-and-search {
-}
-
-.details-and-status {
-}
-
-.component {
-}
-
-pewa-details-book {
-
-}
 </style>

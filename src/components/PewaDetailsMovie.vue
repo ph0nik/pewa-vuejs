@@ -10,9 +10,9 @@
           </a>
         </div>
 <!-- ocena -->
-        <div v-if="realoadedData.ratingAvg">
+        <div v-if="realoadedData.tmdbRating">
             <i class="fa fa-star" aria-hidden="true"></i>
-            {{ realoadedData.ratingAvg }}
+            {{ realoadedData.tmdbRating }}
             <span class="out-of-ten">
               /&nbsp10
             </span>
@@ -67,13 +67,20 @@
           </div>  
         </div>    
 <!-- warstwa detali -->
-        <div v-if="detailsVisible">
+        <div v-if="detailsVisible">          
           <div class="details-full-title">
 <!-- full title -->
+            <span class="title-label">original: </span>
             {{ realoadedData.title }}
-            <div v-if="realoadedData.title.toLowerCase != realoadedData.titlePl.toLowerCase">
+            <div v-if="realoadedData.title.toLowerCase() != realoadedData.engTitle.toLowerCase()">
+              <span class="title-label">english: </span>
+              {{ itemObject.engTitle }}
+            </div>
+            <div v-if="realoadedData.title.toLowerCase() != realoadedData.titlePl.toLowerCase()">
+              <span class="title-label">polish: </span>
               {{ itemObject.titlePl }}
             </div>
+
           </div>
           <div class="poster-box">
             <div>
@@ -149,7 +156,7 @@
             </div>  
           </div>         
 <!-- cast -->
-          <div class="details-people">
+          <div class="details-people stars">
             <div>stars:
               <span v-for="(item, index) of this.actors" v-bind:key="index">
                 <a href="javascript:;" v-on:click="getPerson(item)">
@@ -220,7 +227,11 @@ export default {
       type: Object,
       required: true
     },
-     statusVisible: Boolean
+     statusVisible: Boolean,
+    windowSize: {
+        width: Number,
+        height: Number
+      }
   },
   data() {
     return {
@@ -243,7 +254,7 @@ export default {
       },
       details: true,
       encounters: false,
-      imgWidth: 220
+      imgWidth: 200
     };
   },
   created() {
@@ -277,6 +288,8 @@ export default {
     },
 // assign props object to computed value
     realoadedData: function() {
+      if (this.itemObject.titlePl == undefined) this.itemObject.titlePl = this.itemObject.title;
+      if (this.itemObject.engTitle == undefined) this.itemObject.engTitle = this.itemObject.title;
       return this.itemObject;
     },
 // shorten title to fit title bar
@@ -316,32 +329,17 @@ export default {
       var imgRatio = img.naturalWidth / img.naturalHeight;
       var imageSize = {
 // dziwna pusta przestrzen z prawej strony na niektorych plakatach        
-        // backgroundImage: "url(" + this.imageAddress + ")",
-        // backgroundRepeat: "no-repeat",
-        // backgroundSize: "cover",
-        width: this.imgWidth.toString() + "pt",
-        height: Math.round(this.imgWidth / imgRatio) + "pt"
+        width: this.imgWidth.toString() + "px",
+        height: Math.round(this.imgWidth / imgRatio) + "px"
       };
       // console.log(imageSize.height);
       return imageSize;
     },
-    // imageSize: function() {
-    //   if (this.imgLoaded) {
-    //     var img = document.getElementById("poster");
-    //     if (img && img.style) {
-    //       var imgRatio = img.naturalWidth / img.naturalHeight;
-    //       var imageSize = {
-    //         width: "220px",
-    //         height: Math.round(220 / imgRatio) + "px"
-    //       };
-    //       return imageSize;
-    //     }
-    //   }
-    // },
-    // zwraca adres imdb
+// returns imdb link
     imdbLink: function() {
       return this.realoadedData.imdbLink;
     },
+// returns tmdb link    
     tmdbLink: function() {
       return this.tmdb + this.realoadedData.tmdbId;
       // https://www.themoviedb.org/movie/603-the-matrix
@@ -354,8 +352,17 @@ export default {
       });
       return sorted[sorted.length - 1];
     }
+  },  
+  mounted: function() {
+    this.getWindowSize();
   },
   methods: {
+// set actual parent element size    
+    getWindowSize: function() {
+      this.windowSize.height = document.getElementsByClassName("details")[0].clientHeight;
+      this.windowSize.width = document.getElementsByClassName("details")[0].clientWidth;
+      console.log(this.windowSize);
+    },    
 // set details visible
     setDetails: function() {
       this.details = true;
@@ -438,25 +445,26 @@ a:hover {
   width: 600px;
   border: none;
   padding: 0px;
-  margin: 5pt 5pt 0pt 5pt;
+  margin: 5px 5px 0px 5px;
   background-color: #1c252e;
 }
 
 .details-title-bar {
   display: flex;
   justify-content: space-between;
-  font-size: 22pt;
+  line-height: 1.4em;
+  font-size: 1.8em;
   font-weight: bold;
   background: linear-gradient(to right, #22313f, #2c3f50);
   color: #fff;
-  padding: 0px 8px 2px 8px;
+  padding: 0px 8px 0px 8px;
 }
 
 .details-title-bar2 {
   border-bottom: 1px solid #b9b9b9;
   background-color: #505f6d;
-  line-height: 18pt;
-  font-size: 11pt;
+  line-height: 1.5em;
+  font-size: 1em;
   color: #e2e2e2;
   padding: 0px 10px 0px 10px;
   display: flex;
@@ -476,7 +484,7 @@ a:hover {
 }
 
 .details-select > div button {
-  margin: 4pt;
+  margin: 6px;
 }
 
 .details-select > div > div {
@@ -485,52 +493,61 @@ a:hover {
 }
 
 .details-button {
-  border: 0pt solid #b9b9b9;
-  width: 90pt;
-  height: 20pt;
+  border: none;
+  width: 9.4em;
+  height: 2.1em;
   /* background-color: #404b56; */
   background-color: inherit;
   color: #b9b9b9;
-  border-radius: 1pt;
+  border-radius: 1px;
 }
 
 .details-button:hover {
   cursor: pointer;
-  border: 1pt solid #ffe140;
+  border: 1px solid #ffe140;
   /* border-color: #ffe140; */
   color: #ffe140;
 }
 
 .details-arrow-wrapper {
   background-color: #1c252e;
-  height: 7pt;
+  height: 7px;
 }
 
 .details-arrow {
   background-color: #2b3743;
-  width: 0;
-  height: 0;
-  border-left: 20pt solid #1c252e;
-  border-right: 20pt solid #1c252e;
-  border-top: 7pt solid #2b3743;
+  width: 0px;
+  height: 0px;
+  border-left: 24px solid #1c252e;
+  border-right: 24px solid #1c252e;
+  border-top: 10px solid #2b3743;
 }
 
 .details-full-title {
   border-bottom: 1px solid #2e353c;
   text-align: left;
   color: #6b8fd4;
-  font-size: 12pt;
-  margin: 6pt 8pt 0pt 8pt;
+  font-size: 1em;
+  margin: 12px 8px 0px 8px;
 }
 
-.details-full-title > div {
-  color: #fff;
+.details-full-title > div:nth-of-type(1) {
+  color: #d8d8d8;
+}
+
+.details-full-title > div:nth-of-type(2) {
+  color: #718497;
+}
+
+.details-full-title span {
+  color: #747474;
+  font-size: 0.9em;
 }
 
 .poster-box {
   display: flex;
   justify-content: space-between;
-  font-size: 11pt;
+  font-size: 0.9em;
 }
 
 .details-plot {
@@ -540,39 +557,35 @@ a:hover {
 }
 
 .details-people {
-  padding: 2pt 0pt 4pt 0pt;
+  padding: 2px 0px 4px 0px;
   border-top: 1px solid #2e353c;
   text-align: justify;
   color: #747474;
-  font-size: 11pt;
-  margin: 6pt 8pt 0pt 8pt;
+  font-size: 1em;
+  margin: 6px 10px 0px 10px;
+}
+
+.stars {
+  font-size: 0.9em;
 }
 
 .details-poster-right {
   display: flex;
   flex-direction: column;
   padding: 0px;
-  margin: 8pt 4pt 0px 0px;
-}
-
-.poster {
-  /* border: 1pt solid #11181f;
-  border-radius: 0px;
-  padding: 0px;
-  margin: 8pt 4pt 0px 0px; */
+  margin: 8px 8px 8px 0px;
 }
 
 .poster {
   position: relative;
-  /* margin: 8pt 4pt 0px 0px; */
-  border: 1pt solid #747474;
+  border: 1px solid #747474;
 }
 
 .poster-links {
   position: relative;
   width: 100%;
-  top: 4pt;
-  padding: 2pt;
+  top: 4px;
+  padding: 2px;
   margin: 0px;
   background-color: #2b3743;
   color: #747474;
@@ -583,30 +596,30 @@ a:hover {
 .details-footer-bar {
   border-top: 1px solid #b9b9b9;
   background-color: #3b444d;
-  font-size: 11pt;
+  font-size: 0.9em;
   color: #b9b9b9;
   padding: 0px 10px 0px 10px;
   display: flex;
   justify-content: space-between;
-  margin: 10pt 0pt 5pt 0pt;
+  margin: 10px 0px 5px 0px;
 }
 
 .details-footer-bar > div {
-  line-height: 20pt;
-  margin: 4pt;
+  line-height: 2em;
+  margin: 4px;
 }
 
 .encounter {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  padding: 4pt 4pt 4pt 4pt;
+  padding: 4px;
   border-top: 1px solid #2e353c;
   /* text-align: justify; */
   /* color: #747474; */
   color: #bdbdbd;
-  font-size: 11pt;
-  margin: 6pt 8pt 0pt 8pt;
+  font-size: 0.9em;
+  margin: 6px 8px 0px 8px;
 }
 
 .rating {
@@ -615,7 +628,7 @@ a:hover {
 }
 
 .rating > span {
-  margin: 0pt 1pt 0px 0pt;
+  margin: 0px 1px 0px 0px;
 }
 
 .rating-full {

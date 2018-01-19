@@ -1,6 +1,8 @@
 <template>
 <div class="pewa-search-box">
-        <button class="pewa-button" v-on:click="getLatestElements">Home</button>
+        <button class="pewa-button" v-on:click="getLatestElements">
+          <i class="fa fa-home" aria-hidden="true"></i>
+          Home</button>
         
         <label for="pewa-search"></label>
         <input type="text" 
@@ -17,7 +19,9 @@
           <option v-bind:value="true">External</option>
         </select>
         
-        <button type="button" class="pewa-button" v-on:click="searchEncounters(queryObject)">Search</button>
+        <button type="button" class="pewa-button" v-on:click="searchEncounters(queryObject)">
+          <i class="fa fa-search" aria-hidden="true"></i>
+          Search</button>
 </div>
 </template>
 
@@ -56,17 +60,12 @@ export default {
   outline:none;
 }
 
-.pewa-search-span {
-  border: none;
-  height: 100%;
-  width: 0.5%;
-  background-color: rgb(41, 41, 41);
-}
-
 .pewa-search-box {
-  padding: 0px;
   border: none;
-  margin: 5px;
+  width: 100%;
+  background-color: #6B8FD4;
+  padding: 0px;  
+  margin: 0px;
   /* height: 20px; */
   display: flex;
   font-weight: bold;
