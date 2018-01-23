@@ -11,6 +11,7 @@
         class="pewa-update-window"
         v-if="updateWindowVisible" 
         v-bind:encounter="statusRequest" 
+        v-bind:item-object="elementDetails"
         v-on:closeupdate="closeUpdateWindow"
         v-on:submit="statusBridge($event)">
       </pewa-update-window>
@@ -26,6 +27,13 @@
     <div class="mid-wrapper">      
       
       <div class="list-and-search">
+<!-- loading cover -->
+<!-- v-if="!dataReady" -->
+      <div v-if="!dataReady" class="loading-window-lists" v-bind:style="loadingWindowPanel">
+          <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+          <p>Loading...</p>
+      </div>
+
 <!-- internal list -->
       <pewa-list
         class="pewa-list-component"
@@ -48,10 +56,10 @@
 <!-- right column -->
       <div class="details-and-status">
 
-        <span style="color: #fff;">{{ getWindowSize }}</span>
-      <!-- <div class="loading-window" style="color: #fff;">
+<!-- loading panel -->
+      <div v-if="!detailsReady.status" class="loading-window-details" v-bind:style="loadingWindowPanel">
           <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
-      </div> -->
+      </div>
 
 
       <pewa-details-anime
@@ -208,6 +216,13 @@ export default {
     },
     externalResultsTable: function() {
       return this.externalData;
+    },
+    loadingWindowPanel: function() {
+      let thisStyle = {
+        width: this.windowSize.width + "px",
+        height: this.windowSize.height + "px"
+      };
+      return thisStyle;
     }
   },
   methods: {
@@ -487,6 +502,7 @@ export default {
         tempEncounter = (this.elementDetails.type === "TVSERIES") ? this.elementDetails.internalStatus[status] : this.elementDetails.status[status];
         this.statusRequest = Object.assign({}, tempEncounter);
         this.statusRequest.elementType = this.elementDetails.type;
+        this.statusRequest.totalSeasons = (this.statusRequest.elementType == "TVSERIES") ? this.elementDetails.seasons : 1;
         console.log(this.statusRequest);
       }
       this.updateWindowVisible = true;
@@ -557,13 +573,41 @@ body {
   padding: 0px; */
 }
 
-.loading-window {
+.compontent {
+}
+
+.list-and-search {
+  width: 640px;
+}
+
+.details-and-status {
+  width: 610px;
+}
+
+.loading-window-lists {  
   z-index: 10;
-  /* background-color: #131B23; */
-  background-color: #fff;
-  opacity: 0.5;
+  background-color: #131B23;
+  /* background-color: #fff; */
+  opacity: 0.3;
   position: absolute;
-  cursor: pointer;  
+  text-align: center;
+  width: 620px;
+  padding: 0px;
+  margin: 20px;
+  color: #F0F0F0;
+  border-radius: 0px;
+  display: flex;
+  /* flex-direction: column; */
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-window-details {
+  z-index: 10;
+  background-color: #131B23;
+  /* background-color: #fff; */
+  opacity: 0.3;
+  position: relative;
   width: 620px;
   padding: 0px;
   margin: 0px;
@@ -571,6 +615,7 @@ body {
   border-radius: 0px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 .cover-for-update {
@@ -578,7 +623,7 @@ body {
   z-index: 9;
   visibility: visible;
   background-color: #000000;
-  opacity: 0;
+  opacity: 0.5;
   width: 100%;
   height: 100%;
 }

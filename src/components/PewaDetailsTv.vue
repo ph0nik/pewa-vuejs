@@ -309,7 +309,7 @@ export default {
         this.actors.push(staff[i]);
       }
     };
-    console.log(this.itemObject);
+//   console.log(this.itemObject);
     if (this.statusVisible == true) {
       this.episodes = false;
       this.details = false;
@@ -361,7 +361,7 @@ export default {
     },
     // pobieranie adresu obrazka
     imageAddress: function() {
-      console.log("image address computed function");
+//      console.log("image address computed function");
       let link = this.realoadedData.intPosterOrg;
       return link.replace(".", this.endpoint);
     },
@@ -399,10 +399,9 @@ export default {
   methods: {
 // set actual parent element size    
     getWindowSize: function() {
-
       this.windowSize.height = document.getElementsByClassName("details")[0].clientHeight;
       this.windowSize.width = document.getElementsByClassName("details")[0].clientWidth;
-      console.log(this.windowSize);
+//      console.log(this.windowSize);
     },
     // formatowanie identyfikatorów sezonów i odcinków
     episodeNumber: function(s, ep) {

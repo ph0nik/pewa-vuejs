@@ -4,7 +4,7 @@
       <div class="list-header">
           <div>
             search results:&nbsp
-            <span>{{ this.itemBodySize }}</span>
+            <span>[&nbsp{{ this.itemBodySize }}&nbsp]</span>
           </div>
           <div class="list-search">
             <input type="text" v-model="filteredName" placeholder="filter..."/>
@@ -108,7 +108,11 @@
               <div class="list-footer-buttons-placeholder" v-if="!previousVisible"></div>  
         </div>            
         <div class="footer-page-counter">
-              page {{ listPage }} of {{ totalPages }}
+          <span>page&nbsp[&nbsp</span>
+          {{ listPage }}
+          <span>&nbsp/&nbsp</span>
+          {{ totalPages }}
+          <span>&nbsp]</span>
         </div>
         <div class="footer-next-button">
               <button class="list-footer-buttons" v-if="nextVisible" v-on:click="setPageLoadRange('plus')">
@@ -142,7 +146,7 @@ export default {
         oldBackground: ""
       },
       listPage: 1,
-      elementsPerPage: 10,
+      elementsPerPage: 20,
       shortTitleLength: 42,
       range: {min:Number, max:Number}
     };
@@ -281,6 +285,8 @@ export default {
       let title = "";
       if (data.altTitle) {
         title = data.altTitle;
+      } else if (data.engTitle) {
+        title = data.engTitle
       } else {
         title = data.title;
       }
@@ -475,6 +481,10 @@ export default {
 .footer-page-counter {
   margin: 5px;
   line-height: 2em;
+}
+
+.footer-page-counter > span {
+  color: #b9b9b9;
 }
 
 .list-footer-buttons {
