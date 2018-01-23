@@ -112,8 +112,8 @@ export default {
   methods: {
     // update status
     updateStatus: function(encounterIndex) {
-      console.log('update status');
-      console.log(encounterIndex);
+      // console.log('update status');
+      // console.log(encounterIndex);
       // brak identyfikatora w obiekcie statusu - pozor!
       this.$emit("updatestatus", encounterIndex);
     },

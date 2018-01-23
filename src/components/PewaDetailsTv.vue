@@ -393,8 +393,9 @@ export default {
       return sorted[sorted.length - 1];
     }
   },
-  mounted:function(){
+  mounted: function(){
     this.getWindowSize();
+    
   },
   methods: {
 // set actual parent element size    
@@ -507,7 +508,7 @@ a:hover {
 .details-tv-title-bar {
   display: flex;
   justify-content: space-between;
-  line-height: 1.4em;
+  line-height: 44px;
   font-size: 1.8em;
   font-weight: bold;
   background: linear-gradient(to right, #22313f, #2c3f50);
@@ -705,8 +706,6 @@ a:hover {
   justify-content: space-around;
   padding: 4px;
   border-top: 1px solid #2e353c;
-  /* text-align: justify; */
-  /* color: #747474; */
   color: #bdbdbd;
   font-size: 0.9em;
   margin: 6px 8px 0px 8px;

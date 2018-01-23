@@ -12,6 +12,8 @@
         v-if="updateWindowVisible" 
         v-bind:encounter="statusRequest" 
         v-bind:item-object="elementDetails"
+        v-bind:status-manager="statusManager"
+        v-bind:external-element="externalElement"
         v-on:closeupdate="closeUpdateWindow"
         v-on:submit="statusBridge($event)">
       </pewa-update-window>
@@ -59,6 +61,7 @@
 <!-- loading panel -->
       <div v-if="!detailsReady.status" class="loading-window-details" v-bind:style="loadingWindowPanel">
           <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+          <p>Loading...</p>
       </div>
 
 
@@ -159,6 +162,7 @@ export default {
       },
       initialData: [],
       externalData: [],
+      externalElement: {},
       searchResults: {},
       elementDetails: {},
       idNumber: 0,
@@ -205,7 +209,6 @@ export default {
   },
   computed: {
     getWindowSize: function() {
-      console.log();
       return this.windowSize;
     },
     externalListVisible: function() {
@@ -347,7 +350,6 @@ export default {
     },
     // get details of last shown element
     getLastSelectedElement: function() {
-      console.log("get last");
       if (this.elementDetails.type != null) {
         this.getSelectedElement({
           type: this.elementDetails.type,
@@ -383,7 +385,7 @@ export default {
       let extend;
       switch (data.type) {
         case "TVSERIES":
-          extend = "tv/updatea/" + data.tvMazeId;
+          extend = "tv/update/" + data.tvMazeId;
           break;
         case "MOVIE":
           extend = "movie/update/" + data.tmdbId;
@@ -428,7 +430,6 @@ export default {
       this.statusRequest.comment = data.comment;
       this.statusRequest.statusId = data.statusId ? data.statusId : 0;
       var extend;
-
       switch (this.statusManager.action) {
         case "addstatus":
           extend = "status/add";
@@ -438,7 +439,7 @@ export default {
           break;
         case "addmovie":
           extend = "movie/add/";
-          this.statusRequest.elementType = "MOVIE";
+          this.statusRequest.elementType = "MOVIE";          
           break;
         case "addanime":
           extend = "anime/add/";
@@ -512,6 +513,7 @@ export default {
     addNewElement: function(data) {
       this.statusRequest.encounterId = data.idInt;
       this.statusRequest.elementType = data.type;
+      this.externalElement = data;
       switch (this.statusRequest.elementType) {
         case "ANIME":
           this.statusManager.action = "addanime";
@@ -554,7 +556,7 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: initial;
+  justify-content: center;
   background-color: inherit;
   align-items: center;
   /* width: 1200px; */
@@ -587,7 +589,6 @@ body {
 .loading-window-lists {  
   z-index: 10;
   background-color: #131B23;
-  /* background-color: #fff; */
   opacity: 0.3;
   position: absolute;
   text-align: center;
@@ -597,7 +598,6 @@ body {
   color: #F0F0F0;
   border-radius: 0px;
   display: flex;
-  /* flex-direction: column; */
   justify-content: center;
   align-items: center;
 }
@@ -605,17 +605,17 @@ body {
 .loading-window-details {
   z-index: 10;
   background-color: #131B23;
-  /* background-color: #fff; */
   opacity: 0.3;
-  position: relative;
+  position: absolute;
+  text-align: center;
   width: 620px;
   padding: 0px;
-  margin: 0px;
+   margin: 20px;
   color: #F0F0F0;
   border-radius: 0px;
   display: flex;
-  flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 
 .cover-for-update {

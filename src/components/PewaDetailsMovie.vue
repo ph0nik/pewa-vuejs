@@ -460,6 +460,10 @@ a:hover {
   padding: 0px 8px 0px 8px;
 }
 
+.out-of-ten {
+  font-size: 0.6em;
+}
+
 .details-title-bar2 {
   border-bottom: 1px solid #b9b9b9;
   background-color: #505f6d;

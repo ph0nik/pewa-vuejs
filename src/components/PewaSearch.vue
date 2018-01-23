@@ -1,5 +1,5 @@
 <template>
-<div class="pewa-search-box">
+    <div class="pewa-search-box">
         <button class="pewa-button" v-on:click="getLatestElements">
           <i class="fa fa-home" aria-hidden="true"></i>
           Home</button>
@@ -22,7 +22,7 @@
         <button type="button" class="pewa-button" v-on:click="searchEncounters(queryObject)">
           <i class="fa fa-search" aria-hidden="true"></i>
           Search</button>
-</div>
+    </div>
 </template>
 
 <script>
