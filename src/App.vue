@@ -18,17 +18,19 @@
         v-on:submit="statusBridge($event)">
       </pewa-update-window>
 
+<!-- mid wrapper -->
+    <div class="mid-wrapper">      
+
+      <div class="list-and-search">
+
+
 <!-- search component       -->
-        <pewa-search 
+      <pewa-search 
           class="search-component"
           v-on:searchencounter="searchEncounterByQuery($event)"
           v-on:gohome="loadOnStart()">
-        </pewa-search>
-
-<!-- mid wrapper -->
-    <div class="mid-wrapper">      
+      </pewa-search>
       
-      <div class="list-and-search">
 <!-- loading cover -->
 <!-- v-if="!dataReady" -->
       <div v-if="!dataReady" class="loading-window-lists" v-bind:style="loadingWindowPanel">
@@ -187,7 +189,8 @@ export default {
       windowSize: {
         width: Number,
         height: Number
-      }
+      },
+      errors: []
     };
   },
   components: {
@@ -243,6 +246,7 @@ export default {
           // console.log(this.searchResults);
         })
         .catch(e => {
+          this.dataReady = false;
           this.errors.push(e);
         });
     },
@@ -589,10 +593,11 @@ body {
 .loading-window-lists {  
   z-index: 10;
   background-color: #131B23;
-  opacity: 0.3;
+  opacity: 0.7;
   position: absolute;
   text-align: center;
   width: 620px;
+  min-height: 400px;
   padding: 0px;
   margin: 20px;
   color: #F0F0F0;
@@ -605,10 +610,11 @@ body {
 .loading-window-details {
   z-index: 10;
   background-color: #131B23;
-  opacity: 0.3;
+  opacity: 0.7;
   position: absolute;
   text-align: center;
   width: 620px;
+  min-height: 400px;
   padding: 0px;
    margin: 20px;
   color: #F0F0F0;

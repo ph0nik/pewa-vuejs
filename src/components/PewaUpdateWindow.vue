@@ -291,7 +291,7 @@ export default {
       this.$emit("submit", this.status);
     },
     // highlight rating stars
-    showStars: function(item) {
+    showStars: function(item) {     
       for (var i = 1; i <= item; i++) {
         document.getElementById("star-" + i).style.color = "#ffe140";
       }

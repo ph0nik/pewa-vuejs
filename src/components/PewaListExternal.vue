@@ -4,7 +4,7 @@
 <!-- filter, elements count-->
           <div>
             search results:&nbsp
-            <span>{{ this.itemBodySize }}</span>
+            [<span>{{ this.itemBodySize }}</span>]
           </div>
           <div class="list-search">
             <input type="text" v-model="filteredName" placeholder="filter..."/>
@@ -30,7 +30,7 @@
               </span>
               <span v-else>&nbsp&nbsp</span>
             </div>
-<!-- tear header -->
+<!-- year header -->
             <div class="list-item-header-3 list-item-year-size" v-on:click="setSortingColumn('date')">
               <span>year</span>&nbsp
               <span v-if="this.sortField == 'date'">
@@ -73,14 +73,14 @@
           <div class="full-desc" v-bind:id="'desc-' + index" >
 <!-- floating div arrow -->
             <div class="desc-arrow">
-              <div></div>
+              <div v-bind:id="'arrow-' + index"></div>
               <div></div>
               <div></div>
             </div>
             <div>
 <!-- floating div title -->
               <div class="full-desc-title">
-                {{ item.title }} 
+                {{ item.title }}
                 ({{ new Date(item.date).getFullYear() }})
               </div>
 <!-- floating div description -->
@@ -94,17 +94,17 @@
 <!-- footer -->
       <div class="list-item-footer">
         <div class="footer-prev-button">
-              <button class="list-footer-buttons" v-if="previousVisible" v-on:click="setPageLoadRange('minus')">
+              <button class="list-footer-buttons" v-if="previousVisible" v-on:click="(listPage -= 1)">
                 <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
                 Previous
               </button>
               <div class="list-footer-buttons-placeholder" v-if="!previousVisible"></div>  
-        </div>            
+        </div>
         <div class="footer-page-counter">
-              {{ listPage }} of {{ totalPages }}
+             [<span>{{ listPage + 1 }} of {{ totalPages }}</span>]
         </div>
         <div class="footer-next-button">
-              <button class="list-footer-buttons" v-if="nextVisible" v-on:click="setPageLoadRange('plus')">
+              <button class="list-footer-buttons" v-if="nextVisible" v-on:click="(listPage += 1)">
                 Next
                 <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
               </button>
@@ -132,8 +132,9 @@ export default {
       sortDescending: false,
       elementId: 0,
       rowEncounter: {},
-      shortTitleLength: 42,
-      listPage: 1,
+      shortTitleLength: 52,
+      listPage: 0,
+      totalPages: Number,
       elementsPerPage: 20,
       descriptionVisible: {
         visibility: "hidden"
@@ -142,10 +143,6 @@ export default {
     };
   },
   created() {
-    setDefaultListRange: {
-      this.range.min = 0;
-      this.range.max = this.elementsPerPage;
-    }
     this.itemList = this.defaultList;
     emitFirstElementOnLoad: {
       // this.selectElement(this.defaultList[0]);
@@ -168,22 +165,40 @@ export default {
       let finalList = filteredItemList.sort(
         this.sortingCustom(this.sortField, this.sortDescending)
       );
-      return finalList.slice(this.range.min, this.range.max);
+      let output = this.collectAndDivide(finalList);
+      this.totalPages = output.length;      
+      this.listPage = (this.listPage > this.totalPages) ? 0 : this.listPage;
+      return output[this.listPage];
     },
+    // returns true of there's preceding page with items, sets previous button visible
     previousVisible: function() {
-      if (this.listPage - 1 <= 0) return false;
-      else return true;
+      return (this.listPage <= 0) ? false : true;
     },
+    // return true if there's following page with items, sets next button visible
     nextVisible: function() {
-      if (this.listPage * this.elementsPerPage + 1 > this.itemBodySize)
-        return false;
-      else return true;
+      return (this.listPage + 1 < this.totalPages) ? true : false;
     },
-    totalPages: function() {
-      return Math.ceil(this.itemBodySize / this.elementsPerPage);
-    }
   },
   methods: {
+    // Divides given array in chunks of defined size and returns array of arrays
+    collectAndDivide: function(arr) {
+      let arrSize = arr.length;
+      let newArr = [];
+      let tempArr = []
+      for (var i = 0; i < arrSize; i++) {  
+        if (i == arrSize - 1) {
+          tempArr.push(arr[i]);
+          newArr.push(tempArr);
+        } else if (i % this.elementsPerPage == 0 && i != 0) {          
+          newArr.push(tempArr);
+          tempArr = [];
+          tempArr.push(arr[i]);
+        } else {
+          tempArr.push(arr[i]);
+        }        
+      }
+      return newArr;
+    },
     setReadableType: function(type) {
       let readable = "";
       switch (type) {
@@ -204,18 +219,6 @@ export default {
           break;
       }
       return readable;
-    },
-    setPageLoadRange: function(n) {
-      this.listPage = n === "plus" ? this.listPage + 1 : this.listPage - 1;
-      let pageRange = this.listPage * this.elementsPerPage;
-      let maxDifference = 0;
-      this.range.min = pageRange - this.elementsPerPage;
-      if (this.itemBodySize / pageRange < 1) {
-        maxDifference = pageRange - this.itemBodySize - 1;
-      }
-      this.range.max = this.listPage * this.elementsPerPage - maxDifference;
-      // console.log(this.listPage);
-      // console.log("min: " + this.range.min + " nax: " + this.range.max);
     },
     // funkcja sortowania
     sortingCustom: function(field, reverse, primer) {
@@ -247,8 +250,12 @@ export default {
 // mouse over item on list    
     rowIn: function(id, item) {
       var description = "desc-" + id;
-      if (item.description != null && item.description.length != 0) {
+      var arrow = "arrow-" + id;
+      if (item.description != null && item.description.length != 0) {        
         document.getElementById(description).style.visibility = "visible";
+        document.getElementById(description).style.top = "-6em";
+        // TODO chcanging top margin of arrow based on position of element in table
+        document.getElementById(arrow).style.height = "5.4em";
       }
     },
 // mouse out
@@ -352,7 +359,7 @@ export default {
   font-size: 1em;
   border: none;
   background-color: #c7c7c7;
-  border-radius: 2px;
+  border-radius: 0px;
 }
 
 .list-search input:focus {
@@ -433,16 +440,16 @@ export default {
   flex-direction: row;
   visibility: hidden;
   z-index: 1;
-  width: 500px;
+  min-width: 500px;
   position: absolute;
   left: 100%;
-  top: -2em;
+  /* top: -2em; */
   padding: 0px;
   margin: 0px;
 }
 
 .desc-arrow > div:nth-of-type(1){
-  height: 1.3em;
+  /* height: 1.3em; */
 }
 .desc-arrow > div:nth-of-type(2) {
   margin: 0px 4px 0px 4px;
@@ -487,11 +494,17 @@ export default {
   flex-direction: row;
   justify-content: space-between;
   border-radius: 0px 0px 10px 10px;
+  color: #718497;
 }
 
 .footer-page-counter {
   margin: 5px;
   line-height: 2em;
+}
+
+.footer-page-counter > span {
+  margin: 0px 5px;
+  color: #F0F0F0;
 }
 
 .list-footer-buttons {

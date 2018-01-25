@@ -4,7 +4,7 @@
       <div class="list-header">
           <div>
             search results:&nbsp
-            <span>[&nbsp{{ this.itemBodySize }}&nbsp]</span>
+            [<span>{{ this.itemBodySize }}</span>]
           </div>
           <div class="list-search">
             <input type="text" v-model="filteredName" placeholder="filter..."/>
@@ -87,7 +87,6 @@
             </div>
 <!-- rated -->
             <div class="list-item-rating list-item-rating-size">
-                
                 <span>{{ item.encounterRating }}</span>
                 <i class="fa fa-star" aria-hidden="true"></i>
             </div>
@@ -108,11 +107,7 @@
               <div class="list-footer-buttons-placeholder" v-if="!previousVisible"></div>  
         </div>            
         <div class="footer-page-counter">
-          <span>page&nbsp[&nbsp</span>
-          {{ listPage }}
-          <span>&nbsp/&nbsp</span>
-          {{ totalPages }}
-          <span>&nbsp]</span>
+             [<span>{{ listPage + 1 }} of {{ totalPages }}</span>]
         </div>
         <div class="footer-next-button">
               <button class="list-footer-buttons" v-if="nextVisible" v-on:click="setPageLoadRange('plus')">
@@ -145,7 +140,8 @@ export default {
       rowEncounter: {
         oldBackground: ""
       },
-      listPage: 1,
+      listPage: 0,
+      totalPages: Number,
       elementsPerPage: 20,
       shortTitleLength: 42,
       range: {min:Number, max:Number}
@@ -174,29 +170,69 @@ export default {
 // filtering and sorting function    
     filteredResults: function() {
       this.addLatestStatus();
-      let filteredItemList = this.setItemList.filter(itemList => {
-        return itemList.title
-          .toLowerCase()
-          .match(this.filteredName.toLowerCase());
+      // let filteredItemList = this.setItemList.filter(itemList => {
+      //   let title = itemList.title.toLowerCase();
+      //   let altTitle = (itemList.engTitle) ? itemList.engTitle.toLowerCase() : "";
+      //   let year = itemList.year;
+      //   let all = title + altTitle + year;
+      //   return all.includes(this.filteredName.toLowerCase());
+        // return itemList.title
+        //   .toLowerCase()
+        //   .match(this.filteredName.toLowerCase());
+      // });
+      // this.itemBodySize = filteredItemList.length;
+      // let finalList = filteredItemList.sort(
+      //   this.sortingCustom(this.sortField, this.sortDescending));
+      // return finalList.slice(this.range.min, this.range.max);
+
+      let query = this.filteredName.toLowerCase();
+      let title = "";
+      let filteredItemList = this.setItemList.filter(x => {
+        let type = x.type.toLowerCase();
+        let altTitle = (x.engTitle) ? x.engTitle.toLowerCase() : "";
+        let title = x.title ? x.title.toLowerCase() : "";
+        let year = x.year;
+        let combinedFields = type + altTitle + title + year;
+        return combinedFields.includes(query);
       });
       this.itemBodySize = filteredItemList.length;
       let finalList = filteredItemList.sort(
-        this.sortingCustom(this.sortField, this.sortDescending));
-      return finalList.slice(this.range.min, this.range.max);
+        this.sortingCustom(this.sortField, this.sortDescending)
+      );
+      let output = this.collectAndDivide(finalList);
+      this.totalPages = output.length;      
+      this.listPage = (this.listPage > this.totalPages) ? 0 : this.listPage;
+      return output[this.listPage];
     },
+    // returns true of there's preceding page with items, sets previous button visible
     previousVisible: function() {
-      if (this.listPage - 1 <= 0) return false;
-      else return true;
+      return (this.listPage <= 0) ? false : true;
     },
+    // return true if there's following page with items, sets next button visible
     nextVisible: function() {
-      if (this.listPage * this.elementsPerPage + 1 > this.itemBodySize) return false;
-      else return true;
-    },
-    totalPages: function() {
-      return Math.ceil(this.itemBodySize / this.elementsPerPage);
+      return (this.listPage + 1 < this.totalPages) ? true : false;
     }
   },
   methods: {
+// Divides given array in chunks of defined size and returns array of arrays
+    collectAndDivide: function(arr) {
+      let arrSize = arr.length;
+      let newArr = [];
+      let tempArr = []
+      for (var i = 0; i < arrSize; i++) {  
+        if (i == arrSize - 1) {
+          tempArr.push(arr[i]);
+          newArr.push(tempArr);
+        } else if (i % this.elementsPerPage == 0 && i != 0) {          
+          newArr.push(tempArr);
+          tempArr = [];
+          tempArr.push(arr[i]);
+        } else {
+          tempArr.push(arr[i]);
+        }        
+      }
+      return newArr;
+    },
 // format type string
     setReadableType: function(type) {
       let readable = "";
@@ -222,6 +258,7 @@ export default {
     // select latest status from status array
     addLatestStatus: function() {
       var item;
+      console.log(this.setItemList);
       for (item of this.setItemList) {
         var status = this.getLatest(item.status);
         item["encounterDate"] = status.encounterDate
@@ -476,6 +513,7 @@ export default {
   flex-direction: row;
   justify-content: space-between;
   border-radius: 0px 0px 10px 10px;
+  color: #718497;
 }
 
 .footer-page-counter {
@@ -484,7 +522,8 @@ export default {
 }
 
 .footer-page-counter > span {
-  color: #b9b9b9;
+  margin: 0px 5px;
+  color: #F0F0F0;
 }
 
 .list-footer-buttons {

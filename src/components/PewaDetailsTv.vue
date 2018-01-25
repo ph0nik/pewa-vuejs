@@ -80,7 +80,7 @@
             <div>
               <button class="details-tv-button" v-on:click="setStatus">
                 <i class="fa fa-check-square-o" aria-hidden="true"></i>&nbsp
-                encounters
+                encounters&nbsp[{{itemObject.internalStatus.length}}]
                 </button>
             </div>
             <div class="details-tv-title-arrow-wrapper">

@@ -73,7 +73,7 @@ export default {
       url: "",
       anilistLink: "https://anilist.co/manga/",
       request: "",
-      restAddress: "http://localhost:8081/db-img/",
+      restAddress: "http://localhost:8081/",
       mangaStaff: [],
       animeStaffLong: {
         display: "none"
@@ -102,9 +102,8 @@ export default {
       console.log(this.itemObject);
     },
     imageAddress: function() {
-      // let link = this.itemObject.intPoster;
-      // return this.restAddress + link.slice(1, link.length);
-      return this.restAddress + this.itemObject.intPoster;
+      let link = this.itemObject.intPoster;
+      return this.restAddress + link.slice(1, link.length);
     },
     yearFormatted: function() {
       var year =

@@ -35,8 +35,7 @@
             <a href="javascript:;" v-on:click="getGenre(item)">
               {{ item.genre }}
             </a>
-            <span v-if="index < realoadedData.genres.length - 1">
-              ,&nbsp
+            <span v-if="index < realoadedData.genres.length - 1">,&nbsp
             </span>  
           </div>
         </div>
@@ -58,7 +57,7 @@
             <div>
               <button class="details-button" v-on:click="setStatus">
                 <i class="fa fa-check-square-o" aria-hidden="true"></i>&nbsp
-                encounters
+                encounters&nbsp[{{itemObject.status.length}}]
                 </button>
             </div>
             <div class="details-arrow-wrapper">
@@ -430,11 +429,11 @@ a:active {
 }
 
 a:hover {
-  color: #ffe140;
+  color: #F39C12;
 }
 
 .fa-star {
-  color: #ffe140;
+  color: #F39C12;
 }
 
 .fa-star-o {
@@ -508,9 +507,10 @@ a:hover {
 
 .details-button:hover {
   cursor: pointer;
-  border: 1px solid #ffe140;
-  /* border-color: #ffe140; */
-  color: #ffe140;
+  /* border: 1px solid #ffe140; */
+  border: 2px solid #B97609;
+  /* color: #ffe140; */
+  color: #F39C12;
 }
 
 .details-arrow-wrapper {
