@@ -54,7 +54,7 @@
                     v-on:mouseover="showList(sourceList)"
                     v-on:mouseout="hideList(sourceList)">  
                     <div>
-                      {{ getFormattedSource }}
+                      {{ this.getFormattedSource }}
                     </div>
                     <div>
                       <i v-if="sourceList.visibility == 'hidden'" class="fa fa-chevron-left" aria-hidden="true"></i>
@@ -94,7 +94,7 @@
                 </div>
               </div>
               <div>
-                {{ encounter.encounterRating }}/10
+                {{ computedRating }}/10
               </div>  
            
             </div>
@@ -156,7 +156,7 @@ export default {
         { id: "TV", val: "TV" },
         { id: "Video", val: "VIDEO" },
         { id: "DVD", val: "DVD" },
-        { id: "BluRay", val: "BLURAY" },
+        { id: "Blu-Ray", val: "BLURAY" },
         { id: "Book", val: "BOOK" },
         { id: "eBook", val: "EBOOK" },
         { id: "other", val: "OTHER" }
@@ -175,7 +175,9 @@ export default {
       // TODO add distinc color on list header element
       listHeader: {
         color: String
-      }
+      },
+      mediaSourceTitle: "",
+      ratingValue: 0
     };
   },
   created() {
@@ -250,13 +252,18 @@ export default {
     },
     // user friendly enum formatter
     getFormattedSource: function() {
-      let obj = this.selectMedia.filter(x => {
+      // let source = (this.newEncounter.mediaSource) ? this.newEncounter.mediaSource : this.encounter.mediaSource;
+      // let obj = this.selectMedia.filter(x => {
+      //   return x.val == source;
+      // })[0].id;
+      let source = (this.mediaSourceTitle) ? this.mediaSourceTitle : this.selectMedia.filter(x => {
         return x.val == this.encounter.mediaSource;
       })[0].id;
-      return obj;
+      return source;
     },
     computedRating: function() {
-      // this.showStars(this.encounter.encounterRating);
+      let rating = (this.ratingValue == 0) ? this.newEncounter.encounterRating : this.ratingValue;
+      return rating;
     }
   },
   methods: {
@@ -269,14 +276,21 @@ export default {
       list.visibility = "hidden";
     },
     // select list item
-    getFromList: function(item, list) {
+    getFromList: function(item, list) {     
       this.newEncounter.mediaSource = item.val;
+      this.mediaSourceTitle = item.id;
+      // console.log(this.mediaSourceTitle);
       this.hideList(list);
     },
     // set rating
     setRating: function(item, list) {
-      this.newEncounter.encounterRating = item;
-      this.showStars(this.encounter.encounterRating);
+      this.newEncounter.encounterRating = item;     
+      this.ratingValue = item;
+      this.showStars(this.newEncounter.encounterRating);
+      // this.showStars(this.encounter.encounterRating);
+    },
+    getRating: function() {
+      return this.newEncounter.encounterRating;
     },
     setSeason: function(item, list) {
       this.newEncounter.season = item;

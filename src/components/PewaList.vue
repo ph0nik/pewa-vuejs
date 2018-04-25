@@ -153,38 +153,17 @@ export default {
     this.range.min = 0;
     this.range.max = this.elementsPerPage;
     emitFirstElementOnLoad:  {
-      this.setSortingColumn('encounterDate');
-      this.sortDescending = true;
-      var sorted = this.defaultList.sort(
-        this.sortingCustom(this.sortField, this.sortDescending)
-      );
-      this.selectElement(this.defaultList[0]);
+      this.selectElement(this.filteredResults[0]); // gets the first element from sorted list
     };
   },
   computed: {
 // watches and updates props list element    
     setItemList: function() {
-      console.log(this.defaultList);
       return this.defaultList;
     },
 // filtering and sorting function    
     filteredResults: function() {
       this.addLatestStatus();
-      // let filteredItemList = this.setItemList.filter(itemList => {
-      //   let title = itemList.title.toLowerCase();
-      //   let altTitle = (itemList.engTitle) ? itemList.engTitle.toLowerCase() : "";
-      //   let year = itemList.year;
-      //   let all = title + altTitle + year;
-      //   return all.includes(this.filteredName.toLowerCase());
-        // return itemList.title
-        //   .toLowerCase()
-        //   .match(this.filteredName.toLowerCase());
-      // });
-      // this.itemBodySize = filteredItemList.length;
-      // let finalList = filteredItemList.sort(
-      //   this.sortingCustom(this.sortField, this.sortDescending));
-      // return finalList.slice(this.range.min, this.range.max);
-
       let query = this.filteredName.toLowerCase();
       let title = "";
       let filteredItemList = this.setItemList.filter(x => {
@@ -199,6 +178,8 @@ export default {
       let finalList = filteredItemList.sort(
         this.sortingCustom(this.sortField, this.sortDescending)
       );
+      this.$emit("topelement", finalList[0]);
+      console.log("internal list: " + finalList[0].title);
       let output = this.collectAndDivide(finalList);
       this.totalPages = output.length;      
       this.listPage = (this.listPage > this.totalPages) ? 0 : this.listPage;
@@ -258,7 +239,7 @@ export default {
     // select latest status from status array
     addLatestStatus: function() {
       var item;
-      console.log(this.setItemList);
+      // console.log(this.setItemList);
       for (item of this.setItemList) {
         var status = this.getLatest(item.status);
         item["encounterDate"] = status.encounterDate

@@ -202,11 +202,18 @@
 <!-- end of detail section -->
         <!-- stopka -->
         <div v-if="!encounterVisible" class="details-footer-bar">
-          <!-- dodane -->
+<!-- delete element -->
+          <div>
+            <button class="details-button" v-on:click="deleteItem()" name="delete" type="button">
+              <i class="fa fa-times" aria-hidden="true"></i>
+              delete movie
+            </button>            
+          </div>
+<!-- added -->
           <div>
             added: {{ new Date(realoadedData.dbDatetime).toUTCString() }}
           </div>
-          <!-- update -->
+<!-- update -->
           <div>
             <button v-if="detailsVisible" class="details-button" v-on:click="updateItem()" name="update" type="button">
             <i class="fa fa-refresh" aria-hidden="true"></i>
@@ -375,6 +382,9 @@ export default {
     // auktualizuj film
     updateItem: function() {
       this.$emit("updatemovie", this.itemObject);
+    },
+    deleteItem: function() {
+      this.$emit("deletemovie");
     },
     // TODO szukanie po wybranych
     getGenre: function(genre) {

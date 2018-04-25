@@ -6,6 +6,15 @@
       v-if="updateWindowVisible">
     </div>
       
+<!-- confirm action on delete of item or status -->
+    <pewa-confirm
+      class="pewa-update-window"
+      v-bind:status-manager="statusManager"
+      v-bind:item-object="elementDetails"
+      v-on:closeconfirm="confirmVisible = false"
+      v-on:proceed="deleteElement"
+      v-if="confirmVisible">      
+    </pewa-confirm>
 <!-- update window -->
       <pewa-update-window 
         class="pewa-update-window"
@@ -19,7 +28,7 @@
       </pewa-update-window>
 
 <!-- mid wrapper -->
-    <div class="mid-wrapper">      
+    <div class="mid-wrapper">
 
       <div class="list-and-search">
 
@@ -43,6 +52,7 @@
         class="pewa-list-component"
         v-if="dataReady && internalListVisible" 
         v-bind:default-list="resultsTable" 
+        v-on:topelement="setTopListElement($event)"
         v-on:selectelement="getSelectedElement($event)">
       </pewa-list>
 
@@ -70,15 +80,19 @@
       <pewa-details-anime
         class="component"
         v-if="detailsReady.status && detailsReady.type == 'anime'" 
+        v-bind:status-visible="statusVisible"
         v-bind:item-object="elementDetails" 
-        v-on:updateencounter="openUpdateWindow($event)">
+        v-on:updateencounter="openUpdateWindow($event)"
+        v-on:showstatus="statusVisible = $event">
       </pewa-details-anime>
 <!-- manga component -->
       <pewa-details-manga
         class="component"
         v-if="detailsReady.status && detailsReady.type == 'manga'" 
+        v-bind:status-visible="statusVisible"
         v-bind:item-object="elementDetails" 
-        v-on:updateencounter="openUpdateWindow($event)">
+        v-on:updateencounter="openUpdateWindow($event)"
+        v-on:showstatus="statusVisible = $event">
       </pewa-details-manga>
 
 <!-- tv component -->
@@ -90,6 +104,7 @@
         v-bind:status-visible="statusVisible"
         v-bind:endpoint="restMainEndpoint"
         v-on:updatetv="updateElement($event)"
+        v-on:deletetv="confirmDelete"
         v-on:showstatus="statusVisible = $event">
       </pewa-details-tv>
 
@@ -101,6 +116,7 @@
         v-bind:item-object="elementDetails" 
         v-bind:window-size="windowSize"
         v-on:updatemovie="updateElement($event)"
+        v-on:deletemovie="confirmDelete"
         v-on:showstatus="statusVisible = $event">>
       </pewa-details-movie>
 
@@ -109,7 +125,9 @@
         class="component" 
         v-if="detailsReady.status && detailsReady.type == 'book'" 
         v-bind:item-object="elementDetails" 
-        v-on:updatebook="updateElement($event)">
+        v-bind:status-visible="statusVisible"
+        v-on:updatebook="updateElement($event)"
+        v-on:showstatus="statusVisible = $event">
       </pewa-details-book>
 
 <!-- status component -->
@@ -148,6 +166,7 @@ import PewaDetailsBook from "./components/PewaDetailsBook";
 import PewaDetailsTv from "./components/PewaDetailsTv";
 import PewaListExternal from "./components/PewaListExternal";
 import PewaStatus from "./components/PewaStatus";
+import PewaConfirm from "./components/PewaConfirm";
 import axios from "axios";
 import { HTTP, pewaHttp } from "./http-comon";
 
@@ -156,37 +175,37 @@ export default {
   data() {
     return {
       restMainEndpoint: "http://localhost:8081",
-      internalListVisible: true,
-      updateWindowVisible: false,
-      lastQueryObject: {
+      internalListVisible: true,// set internal list visibility
+      updateWindowVisible: false,// set update window visibility
+      lastQueryObject: { // last query send to external search
         externalSearch: false,
         query: ""
       },
-      initialData: [],
-      externalData: [],
-      externalElement: {},
-      searchResults: {},
-      elementDetails: {},
+      initialData: [], // initial data from internal db
+      externalData: [], // search results from external db
+      externalElement: {}, // element selected from external results list
+      searchResults: {}, // search results from internal db
+      topElementFromInternal: {}, // top element emited by internal list
+      elementDetails: {}, // details of element selected from internal list
       idNumber: 0,
-      dataReady: false,
-      detailsReady: {
+      dataReady: false, // are search results ready to be shown
+      detailsReady: { // are selected item details ready to be shown
         status: false,
         type: ""
       },
-      loadingWindow: {
+      loadingWindow: { // loading window visibility
         status: false
       },
       urlModifier: "",
-      // updateObject: {},
-      statusVisible: false,
-      statusRequest: {},
-      addNewItem: false,
-      statusManager: {
+      confirmVisible: false, // confirmation window visibility
+      statusVisible: false, // status window visibility
+      statusRequest: {}, // status object to be sent to db
+      addNewItem: false, // are you adding new item
+      statusManager: { // status manager object, informs of action to be taken
         action: "addmovie"
       },
-      selectedTitle: String,
-// size of component loaded on the right side, it refreshes every time new set of data is loaded
-      windowSize: {
+      selectedTitle: String, // selected element title
+      windowSize: {// size of component loaded on the right side, it refreshes every time new set of data is loaded
         width: Number,
         height: Number
       },
@@ -205,7 +224,8 @@ export default {
     "pewa-details-movie": PewaDetailsMovie,
     "pewa-details-book": PewaDetailsBook,
     "pewa-details-tv": PewaDetailsTv,
-    "pewa-list-external": PewaListExternal
+    "pewa-list-external": PewaListExternal,
+    "pewa-confirm": PewaConfirm
   },
   created() {
     this.loadOnStart(); 
@@ -229,6 +249,10 @@ export default {
         height: this.windowSize.height + "px"
       };
       return thisStyle;
+    },
+    // sets element to be show on the right panel
+    getElement: function() {
+
     }
   },
   methods: {
@@ -243,14 +267,14 @@ export default {
           this.searchResults = response.data;
           this.initialData = this.searchResults.encounters;
           this.dataReady = true;
-          // console.log(this.searchResults);
+          console.log(this.initialData);
         })
         .catch(e => {
           this.dataReady = false;
           this.errors.push(e);
         });
     },
-    // pobieranie informacji dodatkowych o wybranym elemencie
+// get details about element selected from list
     getEncounterDetails: function(url, type) {
       this.detailsReady.type = type;
       this.detailsReady.status = false;
@@ -316,6 +340,7 @@ export default {
           });
       }
     },
+    // TODO znaleźć gdzie następuje ładowanie pierwszego elementu z listy
     // get selected element from db
     getSelectedElement: function(object) {
       let modurl = "";
@@ -361,13 +386,14 @@ export default {
         });
       }
     },
-    // change visibility of update windo
+    // change visibility of update window
     closeUpdateWindow: function() {
       this.updateWindowVisible = false;
       this.getLastSelectedElement();
     },
     // delete selected status
     deleteEncounter: function(data) {
+      this.statusManager.action = "deleteStatus";
       var extend = "status/delete/" + data;
       var message = "Selected status will be deleted, continue?";
       if (window.confirm(message)) {
@@ -385,6 +411,58 @@ export default {
       }
       // naprawić reakcję po wykonaniu czynności
     },
+// confirm deleting element or status
+    confirmDelete: function() {
+      console.log(this.elementDetails);
+      this.statusManager.action = "deleteItem";
+      this.confirmVisible = true;      
+    },
+    deleteElement: function() {
+      this.confirmVisible = false;      
+      let data = this.elementDetails;
+      let extend;
+      switch (data.type) {
+        case "TVSERIES":
+          extend = "tv/delete/" + data.id;
+          break;
+        case "MOVIE":
+          extend = "movie/delete/" + data.id;
+          break;
+        case "ANIME":
+          extend = "anime/delete/" + data.id;
+          break;
+        case "MANGA":
+          extend = "manga/delete/" + data.id;
+          break;
+        case "BOOK":
+          extend = "book/delete/" + data.id;
+          break;
+      }
+      console.log(extend);
+      pewaHttp
+        .get(extend)
+        .then(response => {
+          console.log("delete");
+          this.searchResults.message = response.data.message;
+          this.searchResults.resultsFound = response.data.resultsFound;
+          this.searchResults.rowsAffected = response.data.rowsAffected;
+          // TODO po usunieciu automatycznie laduje pierwszy elemen z listy lub wisi jesli zostal usuniety pierwszy element
+          this.loadOnStart();
+          console.log("delete function: " + this.topElementFromInternal.title);
+          
+          
+          // this.getSelectedElement(this.topElementFromInternal);
+          // if (this.dataReady) console.log(this.topElementFromInternal.title);
+        })
+
+        .catch(error => {
+          if (!error.response) {
+            console.log("Error 4xx - network problem");
+          } else {
+            this.searchResults.message = response.data.message;
+          }
+        });
+    },
     updateElement: function(data) {
       let extend;
       switch (data.type) {
@@ -395,13 +473,13 @@ export default {
           extend = "movie/update/" + data.tmdbId;
           break;
         case "ANIME":
-          extend = "tv/update" + data.tvMazeId;
+          extend = "anime/update" + data.tvMazeId;
           break;
         case "MANGA":
-          extend = "tv/update" + data.tvMazeId;
+          extend = "manga/update" + data.tvMazeId;
           break;
         case "BOOK":
-          extend = "tv/update" + data.tvMazeId;
+          extend = "book/update" + data.tvMazeId;
           break;
       }
       pewaHttp
@@ -493,7 +571,8 @@ export default {
         comment: ""
       };
       if (this.elementDetails.type.includes("TVSERIES")) {
-        this.statusRequest.season = this.elementDetails.seasons;
+        // this.statusRequest.season = this.elementDetails.seasons;
+        this.statusRequest.totalSeasons = this.elementDetails.seasons;
       }
       console.log("add encounter");
       console.log(this.statusRequest);
@@ -517,6 +596,7 @@ export default {
     addNewElement: function(data) {
       this.statusRequest.encounterId = data.idInt;
       this.statusRequest.elementType = data.type;
+      console.log(data.idInt);
       this.externalElement = data;
       switch (this.statusRequest.elementType) {
         case "ANIME":
@@ -546,6 +626,10 @@ export default {
       this.statusRequest.encounterRating = 10;
       this.statusRequest.season = this.elementDetails.season;
       this.updateWindowVisible = true;
+    },
+    setTopListElement: function(elem) {
+      this.topElementFromInternal = elem;
+      console.log("app: " + this.topElementFromInternal.title);
     }
   }
 };

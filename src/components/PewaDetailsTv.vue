@@ -240,6 +240,13 @@
         </div>
 <!-- footer div         -->
         <div v-if="!encounterVisible" class="details-tv-footer-bar">
+<!-- delete element -->
+          <div>
+            <button class="details-tv-button" v-on:click="deleteItem()" name="delete" type="button">
+              <i class="fa fa-times" aria-hidden="true"></i>
+              delete tv show
+            </button>            
+          </div>
 <!-- element date added -->
           <div>
             added: {{ new Date(realoadedData.dbDatetime).toUTCString() }}
@@ -437,6 +444,9 @@ export default {
     // auktualizuj film
     updateItem: function() {
       this.$emit("updatetv", this.itemObject);
+    },
+    deleteItem: function() {
+      this.$emit("deletetv");
     },
     // TODO szukanie po wybranych
     getGenre: function(genre) {
