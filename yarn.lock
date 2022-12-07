@@ -2,7 +2,7 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 4
+  version: 6
   cacheKey: 7
 
 "@babel/code-frame@npm:^7.0.0":
@@ -370,6 +370,15 @@ __metadata:
   bin:
     acorn: bin/acorn
   checksum: b138585ca3948355fb0125105576b90326d4bdfd610f6c8bab382d281c9ea99d2360280c0aa4548f2e4b924eea2256a273140c49fc1be46d8a3b4b3bfefd8a62
+  languageName: node
+  linkType: hard
+
+"acorn@npm:^8.5.0":
+  version: 8.8.1
+  resolution: "acorn@npm:8.8.1"
+  bin:
+    acorn: bin/acorn
+  checksum: 8/4079b67283b94935157698831967642f24a075c52ce3feaaaafe095776dfbe15d86a1b33b1e53860fc0d062ed6c83f4284a5c87c85b9ad51853a01173da6097f
   languageName: node
   linkType: hard
 
@@ -3615,16 +3624,17 @@ fsevents@^1.2.7:
     bindings: ^1.5.0
     nan: ^2.12.1
   checksum: e70509558b5f49ce9dfacb8f9e2848c6e6751a61966027789561145a9c4ae9ba4c6b28b531bc8b4ae52fdd2d4c90a3bf314e6794717e51838b27910bb41ce588
+  conditions: os=darwin
   languageName: node
   linkType: hard
 
-"fsevents@patch:fsevents@^1.2.7#builtin<compat/fsevents>":
+"fsevents@patch:fsevents@^1.2.7#~builtin<compat/fsevents>":
   version: 1.2.13
-  resolution: "fsevents@patch:fsevents@npm%3A1.2.13#builtin<compat/fsevents>::version=1.2.13&hash=11e9ea"
+  resolution: "fsevents@patch:fsevents@npm%3A1.2.13#~builtin<compat/fsevents>::version=1.2.13&hash=18f3a7"
   dependencies:
     bindings: ^1.5.0
     nan: ^2.12.1
-  checksum: 7bc048c164eb72f91b18ba7cd2ba30679a0afe57e9cd6352eac4bdbc4ddd4ca2ea98674d0bd3a80e96427469adc433c13532494b36aea40fceab36e198982182
+  conditions: os=darwin
   languageName: node
   linkType: hard
 
@@ -6779,9 +6789,9 @@ fsevents@^1.2.7:
   linkType: hard
 
 "qs@npm:~6.5.2":
-  version: 6.5.2
-  resolution: "qs@npm:6.5.2"
-  checksum: fa0410eff2c05ce3328e11f82db4015e7819c986ee056d6b62b06ae112f4929af09ea3b879ca168ff9f0338f50972bba487ad0e46c879e42bfaf63c3c2ea7f09
+  version: 6.5.3
+  resolution: "qs@npm:6.5.3"
+  checksum: 8/6f20bf08cabd90c458e50855559539a28d00b2f2e7dddcb66082b16a43188418cb3cb77cbd09268bcef6022935650f0534357b8af9eeb29bf0f27ccb17655692
   languageName: node
   linkType: hard
 
@@ -7091,12 +7101,12 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^1.1.6#builtin<compat/resolve>, resolve@patch:resolve@^1.1.7#builtin<compat/resolve>":
+"resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.1.7#~builtin<compat/resolve>":
   version: 1.8.1
-  resolution: "resolve@patch:resolve@npm%3A1.8.1#builtin<compat/resolve>::version=1.8.1&hash=3388aa"
+  resolution: "resolve@patch:resolve@npm%3A1.8.1#~builtin<compat/resolve>::version=1.8.1&hash=07638b"
   dependencies:
     path-parse: ^1.0.5
-  checksum: 37e06de431cc7c5c53623ec68a08f487c36395d1536acfc77d0e7f45f59babd8fa05a44268500ce07b42e2b9bc06925994f9c2852f7f13d2d8f71e89a430370e
+  checksum: 8/b7e0748492c5c5a3bacd94b8ef8f52b529dbfea264ed560f352cb5c93ebc92bd8ab072843ff3af775133bdfa3d4b80d3b5a49382ff7457d026e97e2925410fc3
   languageName: node
   linkType: hard
 
